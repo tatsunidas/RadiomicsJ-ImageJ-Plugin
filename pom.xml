@@ -11,7 +11,58 @@
   <groupId>com.vis.imagej</groupId>
   <artifactId>RadiomicsJ_ImageJPlugin</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>RadiomicsJ-ImageJ-Plugin</name>  
+  <name>RadiomicsJ-ImageJ-Plugin</name>
+  
+  <description>Radiomics feature extraction plugin for ImageJ.</description>
+  <url>https://github.com/tatsunidas/RadiomicsJ-ImageJ-Plugin</url>
+  <inceptionYear>2025</inceptionYear>
+
+  <organization>
+      <name>Tatsuaki Kobayashi</name>
+      <url>https://github.com/tatsunidas</url>
+  </organization>
+
+  <licenses>
+      <license>
+          <name>MIT License</name>
+          <url>https://opensource.org/licenses/MIT</url>
+          <distribution>repo</distribution>
+      </license>
+  </licenses>
+
+  <contributors>
+      <contributor>
+          <name>Tatsuaki Kobayashi</name>
+          <roles>
+              <role>founder</role>
+              <role>lead</role>
+          </roles>
+        </contributor>
+  </contributors>
+
+  <mailingLists>
+      <mailingList>
+          <name>ImageJ Forum</name>
+          <archive>https://forum.image.sc/</archive>
+      </mailingList>
+  </mailingLists>
+
+  <scm>
+      <connection>scm:git:git://github.com/tatsunidas/RadiomicsJ-ImageJ-Plugin</connection>
+      <developerConnection>scm:git:git@github.com:tatsunidas/RadiomicsJ-ImageJ-Plugin</developerConnection>
+      <tag>HEAD</tag>
+      <url>https://github.com/tatsunidas/RadiomicsJ-ImageJ-Plugin</url>
+  </scm>
+
+  <issueManagement>
+      <system>GitHub Issues</system>
+      <url>https://github.com/tatsunidas/RadiomicsJ-ImageJ-Plugin/issues</url>
+  </issueManagement>
+
+  <ciManagement>
+      <system>GitHub Actions</system>
+      <url>https://github.com/tatsunidas/RadiomicsJ-ImageJ-Plugin/actions</url>
+  </ciManagement>
   
   <developers>
 		<developer>
@@ -31,6 +82,8 @@
 	  	<maven.compiler.release>8</maven.compiler.release>
 	  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	  	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	  	<license.licenseName>mit</license.licenseName>
+       <license.copyrightOwners>Tatsuaki Kobayashi</license.copyrightOwners>
   </properties>
 	
   <build>
