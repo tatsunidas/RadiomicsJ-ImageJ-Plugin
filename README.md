@@ -24,7 +24,11 @@ This module allows you to train a segmentation model using interactive ROI selec
     Follow the workflow: Train -> Prediction -> Show Results.
     Observe the segmentation results.
 
+Note: Prediction results are calculated using a patch&stride-based raster scan on the image. patch=15, stride=4 is default. If you would like to change these settings, set "PREDICTION_FilterSize" and "PREDICTION_Stride" in RadiomicsJ_IJ_Plugin.properties.
 Note: The execution of the Prediction mode may take some time depending on the image size and feature settings.
+
+User can save calculated features and a trained model by using "Save Configurations".
+Calculated features is saved with "ARFF" format, so user can do more machine learning process using WEKA.
 
 ### Texture Settings
 
@@ -35,6 +39,8 @@ Configure the parameters for Radiomics feature calculation in this section.
         2D Mode: Calculates features slice by slice.
         3D Mode: Calculates volumetric features.
 
+Note: This settings is used to model training and visualization map.
+
 ### Batch Mode
 
 This mode allows for the automated processing of multiple datasets simultaneously. It is useful for calculating features for a large number of image-mask pairs at once.
@@ -43,12 +49,12 @@ This mode allows for the automated processing of multiple datasets simultaneousl
 
 Visualize specific Radiomics features on the image.
 
-    The plugin calculates the specified features using a patch-based raster scan on the image-mask pair.
+    The plugin calculates the specified features using a patch-based raster scan on the image-mask pair (stride=1).
     The calculation parameters are based on the configuration in Texture Settings.
     
 ### Configuration properties
 
-This plugin automatically save properties files to user.home/RadiomicsJ_IJ_Plugin.properties.
+This plugin automatically save properties files to user.home/RadiomicsJ_IJ_Plugin.properties by "Save Configuration" function.
 If you would like to uninstall, remove this file, jar and radiomicsj_lib folder.
 
 ### Requirements
