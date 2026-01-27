@@ -139,7 +139,7 @@ public class RadiomicsVisualizationPanel extends JPanel {
 	private JComboBox<String> featureComboBox;
 	private JSpinner filterSizeSpinner;
 	private JButton executeSliceButton, executeAllButton;
-	private JButton saveMapButton, saveMapToDbButton;
+	private JButton saveMapButton;//, saveMapToDbButton;
 
 	private JRadioButton fusionMapRadio, fusionMaskRadio;
 	private JSlider transparencySlider;
@@ -325,7 +325,7 @@ public class RadiomicsVisualizationPanel extends JPanel {
 
 		// --- Save Actions ---
 		saveMapButton.addActionListener(e -> onSaveMap());
-		saveMapToDbButton.addActionListener(e -> onSaveMapToDb());
+//		saveMapToDbButton.addActionListener(e -> onSaveMapToDb());
 
 		// --- Fusion Actions ---
 		ActionListener fusionTargetListener = e -> updateFusionImage();
@@ -606,10 +606,9 @@ public class RadiomicsVisualizationPanel extends JPanel {
 		}
     }
 
-    /**
-     * [概念] 計算結果のマップをDICOM (Parametric Map等) としてDBに保存します。
-     */
-    private void onSaveMapToDb() {
+	
+    @SuppressWarnings("unused")
+	private void onSaveMapToDb() {
          if (radiomicsMap == null) {
             JOptionPane.showMessageDialog(this, "No radiomics map to save.", "Warning", JOptionPane.WARNING_MESSAGE);
             return;

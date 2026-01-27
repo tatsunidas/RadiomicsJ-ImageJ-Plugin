@@ -15,6 +15,15 @@ public class RadiomicsJ_ImageJPlugin implements PlugIn{
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
+				new RadiomicsJ_ImageJPlugin().run(null);
+			}
+		});
+	}
+	
+	public static void debug() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
 				Class<?> clazz = RadiomicsJ_ImageJPlugin.class;
 				new ij.ImageJ();
 				ImagePlus image = ij.IJ.openImage("http://imagej.net/images/t1-head.zip");
