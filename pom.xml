@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   
-  	<parent>
-		<groupId>org.scijava</groupId>
-		<artifactId>pom-scijava</artifactId>
-		<version>38.0.1</version>
-		<relativePath />
-	</parent>
+  <parent>
+    <groupId>org.scijava</groupId>
+    <artifactId>pom-scijava</artifactId>
+    <version>38.0.1</version>
+    <relativePath />
+  </parent>
   
   <groupId>com.vis.imagej</groupId>
   <artifactId>RadiomicsJ_ImageJPlugin</artifactId>
@@ -65,54 +65,80 @@
   </ciManagement>
   
   <developers>
-		<developer>
-      		<name>Tatsuaki Kobayashi</name>
-      		<email>t_kobayashi@vis-ionary.com</email>
-      		<organization>Visionry Imaging Services, Inc.</organization>
-      		<organizationUrl>https://www.vis-ionary.com</organizationUrl>
-    	</developer>
+    <developer>
+          <name>Tatsuaki Kobayashi</name>
+          <email>t_kobayashi@vis-ionary.com</email>
+          <organization>Visionry Imaging Services, Inc.</organization>
+          <organizationUrl>https://www.vis-ionary.com</organizationUrl>
+    </developer>
   </developers>
   
   <properties>
-		<exec.mainClass>RadiomicsJ_ImageJPlugin</exec.mainClass>
-		<jdk.version>8</jdk.version>
-	  	<java.version>8</java.version>
-	  	<maven.compiler.source>8</maven.compiler.source>
-	  	<maven.compiler.target>8</maven.compiler.target>
-	  	<maven.compiler.release>8</maven.compiler.release>
-	  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	  	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	  	<license.licenseName>mit</license.licenseName>
-       <license.copyrightOwners>Tatsuaki Kobayashi</license.copyrightOwners>
+    <exec.mainClass>RadiomicsJ_ImageJPlugin</exec.mainClass>
+    <jdk.version>8</jdk.version>
+    <java.version>8</java.version>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <license.licenseName>mit</license.licenseName>
+    <license.copyrightOwners>Tatsuaki Kobayashi</license.copyrightOwners>
   </properties>
-	
-  <build>
-  		<plugins>
-	        <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-jar-plugin</artifactId>
-	            <configuration>
-	                <archive>
-	                    <manifest>
-	                        <addClasspath>true</addClasspath>
-	                        <mainClass>RadiomicsJ_ImageJPlugin</mainClass>
-	                    </manifest>
-	                </archive>
-	            </configuration>
-	        </plugin>
-	    </plugins>
-  </build>
-	
-  <dependencies>
-		<dependency>
-			<groupId>io.github.tatsunidas</groupId>
-			<artifactId>radiomicsj</artifactId>
-			<version>2.1.15</version>
-		</dependency>
-		<dependency>
-			<groupId>nz.ac.waikato.cms.weka</groupId>
-			<artifactId>weka-dev</artifactId>
-		</dependency>
-  </dependencies>
   
+  <build>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-jar-plugin</artifactId>
+              <configuration>
+                  <archive>
+                      <manifest>
+                          <addClasspath>true</addClasspath>
+                          <mainClass>RadiomicsJ_ImageJPlugin</mainClass>
+                          <classpathPrefix>radiomicsj_lib/</classpathPrefix>
+                      </manifest>
+                  </archive>
+              </configuration>
+          </plugin>
+          <plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-dependency-plugin</artifactId>
+			    <executions>
+			        <execution>
+			            <id>copy-dependencies</id>
+			            <phase>package</phase>
+			            <goals>
+			                <goal>copy-dependencies</goal>
+			            </goals>
+			            <configuration>
+			                <outputDirectory>${project.build.directory}/radiomicsj_lib</outputDirectory>
+			                <includeScope>runtime</includeScope>
+			                <overWriteReleases>false</overWriteReleases>
+			                <overWriteSnapshots>false</overWriteSnapshots>
+			                <overWriteIfNewer>true</overWriteIfNewer>
+			            </configuration>
+			        </execution>
+			    </executions>
+			</plugin>
+      </plugins>
+  </build>
+  
+  <dependencies>
+      <dependency>
+          <groupId>net.imagej</groupId>
+          <artifactId>ij</artifactId>
+          <scope>provided</scope> 
+      </dependency>
+    
+      <dependency>
+          <groupId>io.github.tatsunidas</groupId>
+          <artifactId>radiomicsj</artifactId>
+          <version>2.1.15</version>
+      </dependency>
+    
+      <dependency>
+          <groupId>nz.ac.waikato.cms.weka</groupId>
+          <artifactId>weka-dev</artifactId>
+      </dependency>
+  </dependencies>
 </project>
