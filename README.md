@@ -49,7 +49,7 @@ Visualize specific Radiomics features on the image.
 ### Configuration properties
 
 This plugin automatically save properties files to user.home/RadiomicsJ_IJ_Plugin.properties.
-If you would like to uninstall, do just remove this file.
+If you would like to uninstall, remove this file, jar and radiomicsj_lib folder.
 
 ### Requirements
 
