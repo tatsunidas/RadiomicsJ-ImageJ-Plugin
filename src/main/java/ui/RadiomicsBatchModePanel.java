@@ -282,7 +282,8 @@ public class RadiomicsBatchModePanel extends JPanel {
 		usageTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
 		usageTextArea.setRows(5);
 
-		String usageText = "Batchモードは、複数の画像とマスクのペアを一度に処理するためのモードです。\n\n"
+		@SuppressWarnings("unused")
+		String usageTextJP = "Batchモードは、複数の画像とマスクのペアを一度に処理するためのモードです。\n\n"
 				+ "1. 'Image Parent Folder Path'に、処理したい画像が含まれる親フォルダを指定します。\n"
 				+ "期待されるフォルダ構成： parent:\n"
 				+ "                             case1\n"
@@ -309,6 +310,35 @@ public class RadiomicsBatchModePanel extends JPanel {
 				+ "画像とマスクのペアがあるもののみが計算対象とされます。\n"
 				+ "画像とマスクで画像枚数に違いがある場合、マスクのファイル名末尾に記載されたアンダースコアで区切られたスライス番号（1~N）（'_001'など）を認識して、残りのスライスをブランク画像でパディングします。\n\n"
 				+ "3. 'Output save to'に、処理結果CSVを保存するフォルダを指定します。\n";
+		
+		String usageText = "Batch Mode allows you to process multiple pairs of images and masks simultaneously.\n\n"
+		        + "1. Specify the parent folder containing the input images in 'Image Parent Folder Path'.\n"
+		        + "Expected directory structure: parent:\n"
+		        + "                             case1\n"
+		        + "                                 image1\n"
+		        + "                                 image2\n"
+		        + "                                 imageX\n"
+		        + "                             case2\n"
+		        + "                                 ...\n"
+		        + "                             caseN\n"
+		        + "                                 ...\n\n"
+		        + "2. Specify the parent folder containing the corresponding mask images in 'Mask Parent Folder Path'.\n"
+		        + "Expected directory structure: parent:\n"
+		        + "                             case1\n"
+		        + "                                 mask1\n"
+		        + "                                 mask2\n"
+		        + "                                 maskX\n"
+		        + "                             case2\n"
+		        + "                                 ...\n"
+		        + "                             caseN\n"
+		        + "                                 ...\n\n"
+		        + "Images must be stored within case-specific subfolders.\n"
+		        + "(e.g.) If the Image case folder is C:\\Data\\Images\\Set1, the corresponding Mask folder must be C:\\Data\\Masks\\Set1.\n"
+		        + "Image stacks are supported.\n"
+		        + "Only cases with matching image-mask pairs will be processed.\n"
+		        + "If the slice counts differ between the image and mask, the system identifies the slice number (1-N) via the underscore-delimited suffix in the mask filename (e.g., '_001') and pads any missing slices with blank images.\n\n"
+		        + "3. Specify the destination folder for the output CSV results in 'Output save to'.\n";
+		
 		usageTextArea.setText(usageText);
 
 		JScrollPane scrollPane = new JScrollPane(usageTextArea);
@@ -517,48 +547,48 @@ public class RadiomicsBatchModePanel extends JPanel {
      */
 	public boolean validateDataset(String imageParentDirPath, String maskParentDirPath) {
 		clearLog();
-		log("=== データセット検証開始 ===");
+		log("=== Check Dataset ===");
 		
 		File imageParentDir = new File(imageParentDirPath);
 		File maskParentDir = new File(maskParentDirPath);
 		
 		if(!imageParentDir.exists() || !maskParentDir.exists()) {
-			log("!! 検証失敗: Image親フォルダまたはMask親フォルダが見つかりません。");
+			log("!! Something failed: Image parent folder or Mask parent folder not found.");
 			return false;
 		}
 		
-		log("Image親フォルダ: " + imageParentDir.getAbsolutePath());
-		log("Mask親フォルダ: " + maskParentDir.getAbsolutePath());
+		log("Image parent: " + imageParentDir.getAbsolutePath());
+		log("Mask parent: " + maskParentDir.getAbsolutePath());
 
 		// --- ステップ1: Caseフォルダのリストアップとペアリング ---
 		Map<String, File> imageCaseMap = getCaseFolders(imageParentDir);
 		Map<String, File> maskCaseMap = getCaseFolders(maskParentDir);
 
 		if (imageCaseMap.isEmpty()) {
-			log("!! 検証失敗: Image親フォルダにCaseフォルダが見つかりません。");
+			log("!! Failed: No cases in Image parent...");
 			return false;
 		}
 
 		List<String> pairedCaseNames = new ArrayList<>();
-		log("\n--- Caseペアリング調査 ---");
+		log("\n--- Case pairing check ---");
 		for (String imageCaseName : imageCaseMap.keySet()) {
 			if (maskCaseMap.containsKey(imageCaseName)) {
 				pairedCaseNames.add(imageCaseName);
 			} else {
-				log("(情報) Image側のみに存在: " + imageCaseName);
+				log("(Info) Only Image exists (no mask found): " + imageCaseName);
 			}
 		}
-		log("◎ ペアが見つかったCase (検証対象): " + pairedCaseNames);
+		log("◎ Paired Case (will start calculation): " + pairedCaseNames);
 		log("------------------------\n");
 
 		if (pairedCaseNames.isEmpty()) {
-			log("!! 検証失敗: ImageとMaskで一致するCaseフォルダが一つも見つかりません。");
+			log("!! Error, Failed to start. No pairs exists.");
 			return false;
 		}
 
 		// --- 各ペアの詳細検証 ---
 		for (String caseName : pairedCaseNames) {
-			log("--- 検証中: [" + caseName + "] ---");
+			log("--- Validation: [" + caseName + "] ---");
 			File imageCaseDir = imageCaseMap.get(caseName);
 			File maskCaseDir = maskCaseMap.get(caseName);
 
@@ -567,12 +597,12 @@ public class RadiomicsBatchModePanel extends JPanel {
 			List<File> nonImageMaskCase = getNonImageFiles(maskCaseDir);
 
 			if (!nonImageImageCase.isEmpty()) {
-				log(" (警告) [" + caseName + "] Imageフォルダに画像以外のファイルが含まれています: "
+				log(" (Warning) [" + caseName + "] Not image file included...: "
 						+ nonImageImageCase.stream().map(File::getName).collect(Collectors.joining(", ")));
 				return false;
 			}
 			if (!nonImageMaskCase.isEmpty()) {
-				log(" (警告) [" + caseName + "] Maskフォルダに画像以外のファイルが含まれています: "
+				log(" (警告) [" + caseName + "] Not mask file included...: "
 						+ nonImageMaskCase.stream().map(File::getName).collect(Collectors.joining(", ")));
 				return false;
 			}
@@ -583,35 +613,35 @@ public class RadiomicsBatchModePanel extends JPanel {
 
 			// ステップ2: 画像の存在チェック
 			if (impImage == null || impImage.getNSlices() == 0) {
-				log(" (スキップ) Imageフォルダが空か、画像を読み込めません。");
+				log(" (SKIP) Blank image or cannot read it.");
 				continue;
 			}
 			if (impMask == null || impMask.getNSlices() == 0) {
-				log(" (スキップ) Maskフォルダが空か、画像を読み込めません。");
+				log("(SKIP) Blank mask or cannot read it.");
 				continue;
 			}
 
 			// ステップ3 & 4: スライス枚数の比較
 			int imageSlices = impImage.getNSlices();
 			int maskSlices = impMask.getNSlices();
-			log(" スライス数: Image=" + imageSlices + ", Mask=" + maskSlices);
+			log(" NumOfSlice: Image=" + imageSlices + ", Mask=" + maskSlices);
 
 			if (maskSlices > imageSlices) {
-				log("!! 検証失敗: [" + caseName + "] Maskのスライス数(" + maskSlices + ")がImageのスライス数(" + imageSlices
-						+ ")を上回っています。");
+				log("!! Failed: [" + caseName + "] Mask slices(" + maskSlices + "), Image slices(" + imageSlices
+						+ ") not match.");
 				impImage.close();
 				impMask.close();
 				return false; // 処理を中断
 			}
 
 			if (imageSlices == maskSlices) {
-				log("検証OK: [" + caseName + "] Maskのスライス数(" + maskSlices + "), Imageのスライス数(" + imageSlices + ")");
+				log("OK: [" + caseName + "] Mask slices(" + maskSlices + "), Image slices(" + imageSlices + ")");
 				return true;
 			}
 
 			// ステップ5: Maskスライス数が少ない場合のチェック (0 < N < Image)
 			if (maskSlices > 0 && maskSlices < imageSlices) {
-				log(" (情報) Maskのスライス数がImageより少ないため、ファイル名またはSliceLabelからスライス位置を取得できるかをチェックします...");
+				log(" (Info) Mask slices is less than num of images. Will check SliceLabel from file name.");
 
 				File[] maskFiles = getFilesInDir(maskCaseDir);
 				int maskFileCount = maskFiles.length;
@@ -620,40 +650,39 @@ public class RadiomicsBatchModePanel extends JPanel {
 					// サブケースA: 複数ファイル (連番ファイル) の場合
 					// ファイル名に "_xxx" (スライス番号) があるかチェック
 					if (!checkSliceLabelsForNumbers(impMask)) {
-						log("!! 検証失敗: [" + caseName + "] Maskは複数ファイルですが、各スライスのSliceLabel(ファイル名)にスライス番号（数字）の記載が見つかりません。");
+						log("!! Failed: [" + caseName + "] Mask is looks good, but SliceLabel(from file name) is not found.");
 						impImage.close();
 						impMask.close();
 						return false;
 					}
-					log(" (OK) Maskファイル名にスライス番号パターンを確認しました。");
+					log(" (OK) Recognized slice numbers from Mask file name.");
 
 				} else if (maskFileCount == 1 && maskSlices >= 1) {
 					// サブケースB: 単一ファイル (スタック) の場合
 					// SliceLabelにスライス番号（数字）が記載されているかチェック
 					if (!checkSliceLabelsForNumbers(impMask)) {
-						log("!! 検証失敗: [" + caseName + "] Maskは単一スタック画像ですが、各スライスのSliceLabelにスライス番号（数字）の記載が見つかりません。");
+						log("!! Failed: [" + caseName + "] Mask is stack, but slice number could not found.");
 						impImage.close();
 						impMask.close();
 						return false;
 					}
-					log(" (OK) MaskスタックのSliceLabelにスライス番号を確認しました。");
+					log(" (OK) Recognize slice numbers from Mask stack.");
 
 				} else if (maskFileCount > 1 && maskFileCount != maskSlices) {
 					// ImageJが認識したスライス数と実ファイル数が異なる（異常ケース）
-					log("!! 検証失敗: [" + caseName + "] Maskフォルダ内のファイル数(" + maskFileCount + ")とGRAPHYが認識したスライス数("
-							+ maskSlices + ")が一致しません。");
+					log("!! Failed: [" + caseName + "] num of files in Mask folder(" + maskFileCount + ") and num of recognized masks("
+							+ maskSlices + ") not match.");
 					impImage.close();
 					impMask.close();
 					return false;
 				}
 			}
-			log("--- [OK] " + caseName + " の検証完了 ---");
+			log("--- [OK] " + caseName + " check completed ---");
 			impImage.close();
 			impMask.close();
 		}
 
-		log("\n=== 検証完了 ===");
-		log("すべての検証対象Caseが要件を満たしました。");
+		log("\n=== Check Complete, all clear ===");
 		return true;
 	}
 
@@ -721,7 +750,7 @@ public class RadiomicsBatchModePanel extends JPanel {
 		for (File file : files) {
 			if (!sliceNumberPattern.matcher(file.getName()).find()) {
 				// 1つでもパターンに一致しないファイルがあればNG
-				log(" (デバッグ) NGファイル名: " + file.getName());
+				log(" (Debug) NG file name: " + file.getName());
 				return false;
 			}
 		}
@@ -743,7 +772,7 @@ public class RadiomicsBatchModePanel extends JPanel {
 		for (int i = 1; i <= impMask.getNSlices(); i++) {
 			String label = impMask.getStack().getSliceLabel(i);
 			if (label == null || label.trim().isEmpty()) {
-				log(" (デバッグ) NG SliceLabel: スライス " + i + " のラベルが null または空です。");
+				log(" (Debug) NG SliceLabel: SLICE " + i + ", label is null or blank.");
 				return false;
 			}
 			// 2. 拡張子を取り除く ("mask_plaque_001.tif" -> "mask_plaque_001")
@@ -772,8 +801,8 @@ public class RadiomicsBatchModePanel extends JPanel {
 				continue;
 			}
 			// 4. パターンAにもBにも一致しなかった (例: "mask.tif" -> "mask")
-			log(" (デバッグ) NG SliceLabel: スライス " + i + " のラベル '" + label + "' (ベース名: '" + baseName
-					+ "') からスライス番号を特定できません。");
+			log(" (Debug) NG SliceLabel: Slice " + i + " '" + label + "' (base name: '" + baseName
+					+ "') : Slice number unknown.");
 			return false;
 		}
 		// ループを完走した場合、すべてのスライスが有効
@@ -850,7 +879,7 @@ public class RadiomicsBatchModePanel extends JPanel {
 			clearLog(); // 親クラスのログバッファをクリア
 			if (!validateDataset(imageParentDir, maskParentDir)) {
 				publish(getLog()); // 検証ログをGUIに送信
-				throw new Exception("データセットの検証に失敗しました。");
+				throw new Exception("Dataset validation failed.");
 			}
 			publish(getLog()); // 検証ログをGUIに送信
 			clearLog(); // ログバッファをクリアして次のステップへ
@@ -866,7 +895,7 @@ public class RadiomicsBatchModePanel extends JPanel {
 			}
             
 			if (pairedCaseNames.isEmpty()) {
-				throw new Exception("処理対象のペア Case が見つかりません。");
+				throw new Exception("Process image and mask pair not found.");
 			}
 			
 			RadiomicsPipeline radpipe = new RadiomicsPipeline(radSettings);
@@ -933,7 +962,7 @@ public class RadiomicsBatchModePanel extends JPanel {
 				ImagePlus impMask = loadStack(maskCaseDir);
 
 				if (impImage == null || impMask == null) {
-					publish(" (警告) [" + caseName + "] Image または Mask が読み込めません。スキップします。");
+					publish(" (Warinig) [" + caseName + "] Image or Mask cannot read. skip it.");
 					continue; // 次の症例へ
 				}
 
@@ -996,7 +1025,7 @@ public class RadiomicsBatchModePanel extends JPanel {
 				get();
 				// 3. 成功した場合
 				progressBar.setValue(100); // 100% に
-				JOptionPane.showMessageDialog(comp, "バッチ処理が正常に完了しました。", "Batch process was done.", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(comp, "Finish batch process successfully.", "Batch process was done.", JOptionPane.INFORMATION_MESSAGE);
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
@@ -1013,10 +1042,10 @@ public class RadiomicsBatchModePanel extends JPanel {
 				progressBar.setVisible(false); // エラー時はプログレスバーを隠す
 				String errorMessage = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
 
-				usageTextArea.append("\n--- エラー発生 --- \n" + errorMessage);
+				usageTextArea.append("\n--- Error occured --- \n" + errorMessage);
 				usageTextArea.setCaretPosition(usageTextArea.getDocument().getLength());
 
-				JOptionPane.showMessageDialog(comp, "処理中にエラーが発生しました:\n" + errorMessage, "エラー",
+				JOptionPane.showMessageDialog(comp, "Error occured in process...:\n" + errorMessage, "Error",
 						JOptionPane.ERROR_MESSAGE);
 			}
 		}
