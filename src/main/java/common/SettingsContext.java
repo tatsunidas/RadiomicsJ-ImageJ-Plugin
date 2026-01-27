@@ -71,78 +71,81 @@ public class SettingsContext {
 	public static final String FRACTAL = "Fractal";
 	public static final String SHAPE2D = "Shape2D";
 	
-	public static final String EXCLUSION_PREFIX = "RadiomicsJ.EXCLUSION";
+	public static final String EXCLUSION_PREFIX = "EXCLUSION";
 	
-	public static final String IMPUTE = "RadiomicsJ.MODEL_Impute";
-	public static final String BALANCE = "RadiomicsJ.MODEL_Balance";
-	public static final String FEATURE_SELECT = "RadiomicsJ.MODEL_FeatureSelect";
+	public static final String IMPUTE = "MODEL_Impute";
+	public static final String BALANCE = "MODEL_Balance";
+	public static final String FEATURE_SELECT = "MODEL_FeatureSelect";
 	
 	/**
-	 * calculation
+	 * prediction
 	 */
-	public static final String CLASSIFICATION = "RadiomicsJ.CLASSIFICATION_STRING";
-	public static final String REGRESSION = "RadiomicsJ.REGRESSION_STRING";
-	public static final String D3Basis = "RadiomicsJ.3DBASIS_BOOL";
+	public static final String CLASSIFICATION = "CLASSIFICATION_STRING";
+	public static final String REGRESSION = "REGRESSION_STRING";
+	public static final String D3Basis = "3DBASIS_BOOL";
+	public static final String PREDICTION_Stride = "PREDICTION_Stride";
+	public static final String PREDICTION_FilterSize = "PREDICTION_FilterSize";
+	
 	
 	/**
 	 * mask settings
 	 */
-	public static final String MASK_LABEL = "RadiomicsJ.MASK_LABEL_INT";
-	public static final String RemoveOutliers = "RadiomicsJ.RemoveOutliers_BOOL";
-	public static final String RemoveOutliersSigma = "RadiomicsJ.Sigma_INT";
-	public static final String RangeFiltering = "RadiomicsJ.RangeFiltering_BOOL";
-	public static final String RangeFilteringMin = "RadiomicsJ.ResamplingMin_DOUBLE";
-	public static final String RangeFilteringMax = "RadiomicsJ.ResamplingMax_DOUBLE";
-	public static final String Resampling = "RadiomicsJ.Resampling_BOOL";
-	public static final String ResamplingX = "RadiomicsJ.ResamplingX_DOUBLE";
-	public static final String ResamplingY = "RadiomicsJ.ResamplingY_DOUBLE";
-	public static final String ResamplingZ = "RadiomicsJ.ResamplingZ_DOUBLE";
+	public static final String MASK_LABEL = "MASK_LABEL_INT";
+	public static final String RemoveOutliers = "RemoveOutliers_BOOL";
+	public static final String RemoveOutliersSigma = "Sigma_INT";
+	public static final String RangeFiltering = "RangeFiltering_BOOL";
+	public static final String RangeFilteringMin = "ResamplingMin_DOUBLE";
+	public static final String RangeFilteringMax = "ResamplingMax_DOUBLE";
+	public static final String Resampling = "Resampling_BOOL";
+	public static final String ResamplingX = "ResamplingX_DOUBLE";
+	public static final String ResamplingY = "ResamplingY_DOUBLE";
+	public static final String ResamplingZ = "ResamplingZ_DOUBLE";
 	
 	//TODO
-	public static final String UseBinCountHISTOGRAM = "RadiomicsJ.BINCOUNT_HIST_BOOL";
-	public static final String BinCountHISTOGRAM = "RadiomicsJ.BINCOUNT_HIST_INT";
-	public static final String BinWidthHISTOGRAM = "RadiomicsJ.BINWIDTH_HIST_DOUBLE";
+	public static final String UseBinCountHISTOGRAM = "BINCOUNT_HIST_BOOL";
+	public static final String BinCountHISTOGRAM = "BINCOUNT_HIST_INT";
+	public static final String BinWidthHISTOGRAM = "BINWIDTH_HIST_DOUBLE";
 	
-	public static final String UseOriginalIVH = "RadiomicsJ.USEORIGINAL_IVH_BOOL";
-	public static final String UseBinCountIVH = "RadiomicsJ.BINCOUNT_IVH_BOOL";
-	public static final String BinCountIVH = "RadiomicsJ.BINCOUNT_IVH_INT";
-	public static final String BinWidthIVH = "RadiomicsJ.BINWIDTH_IVH_DOUBLE";
+	public static final String UseOriginalIVH = "USEORIGINAL_IVH_BOOL";
+	public static final String UseBinCountIVH = "BINCOUNT_IVH_BOOL";
+	public static final String BinCountIVH = "BINCOUNT_IVH_INT";
+	public static final String BinWidthIVH = "BINWIDTH_IVH_DOUBLE";
 	
-	public static final String UseBinCountGLCM = "RadiomicsJ.BINCOUNT_GLCM_BOOL";
-	public static final String BinCountGLCM = "RadiomicsJ.BINCOUNT_GLCM_INT";
-	public static final String BinWidthGLCM = "RadiomicsJ.BINWIDTH_GLCM_DOUBLE";
-	public static final String DeltaGLCM = "RadiomicsJ.DELTA_GLCM_DOUBLE";
+	public static final String UseBinCountGLCM = "BINCOUNT_GLCM_BOOL";
+	public static final String BinCountGLCM = "BINCOUNT_GLCM_INT";
+	public static final String BinWidthGLCM = "BINWIDTH_GLCM_DOUBLE";
+	public static final String DeltaGLCM = "DELTA_GLCM_DOUBLE";
 	//public static final String NormGLCM = "NORM_GLCM_STRING";
 	
-	public static final String UseBinCountGLRLM = "RadiomicsJ.BINCOUNT_GLRLM_BOOL";
-	public static final String BinCountGLRLM = "RadiomicsJ.BINCOUNT_GLRLM_INT";
-	public static final String BinWidthGLRLM = "RadiomicsJ.BINWIDTH_GLRLM_DOUBLE";
+	public static final String UseBinCountGLRLM = "BINCOUNT_GLRLM_BOOL";
+	public static final String BinCountGLRLM = "BINCOUNT_GLRLM_INT";
+	public static final String BinWidthGLRLM = "BINWIDTH_GLRLM_DOUBLE";
 //	public static final String NormGLRLM = "NORM_GLRLM_STRING";
 	
-	public static final String UseBinCountGLSZM = "RadiomicsJ.BINCOUNT_GLSZM_BOOL";
-	public static final String BinCountGLSZM = "RadiomicsJ.BINCOUNT_GLSZM_INT";
-	public static final String BinWidthGLSZM = "RadiomicsJ.BINWIDTH_GLSZM_DOUBLE";
+	public static final String UseBinCountGLSZM = "BINCOUNT_GLSZM_BOOL";
+	public static final String BinCountGLSZM = "BINCOUNT_GLSZM_INT";
+	public static final String BinWidthGLSZM = "BINWIDTH_GLSZM_DOUBLE";
 //	public static final String NormGLSZM = "NORM_GLSZM_STRING";
 	
-	public static final String UseBinCountGLDZM = "RadiomicsJ.BINCOUNT_GLDZM_BOOL";
-	public static final String BinCountGLDZM = "RadiomicsJ.BINCOUNT_GLDZM_INT";
-	public static final String BinWidthGLDZM = "RadiomicsJ.BINWIDTH_GLDZM_DOUBLE";
+	public static final String UseBinCountGLDZM = "BINCOUNT_GLDZM_BOOL";
+	public static final String BinCountGLDZM = "BINCOUNT_GLDZM_INT";
+	public static final String BinWidthGLDZM = "BINWIDTH_GLDZM_DOUBLE";
 //	public static final String NormGLDZM = "NORM_GLDZM_STRING";
 	
-	public static final String UseBinCountNGTDM = "RadiomicsJ.BINCOUNT_NGTDM_BOOL";
-	public static final String BinCountNGTDM = "RadiomicsJ.BINCOUNT_NGTDM_INT";
-	public static final String BinWidthNGTDM = "RadiomicsJ.BINWIDTH_NGTDM_DOUBLE";
-	public static final String DeltaNGTDM = "RadiomicsJ.DELTA_NGTDM_DOUBLE";
+	public static final String UseBinCountNGTDM = "BINCOUNT_NGTDM_BOOL";
+	public static final String BinCountNGTDM = "BINCOUNT_NGTDM_INT";
+	public static final String BinWidthNGTDM = "BINWIDTH_NGTDM_DOUBLE";
+	public static final String DeltaNGTDM = "DELTA_NGTDM_DOUBLE";
 //	public static final String NormNGTDM = "NORM_NGTDM_STRING";
 	
-	public static final String UseBinCountNGLDM = "RadiomicsJ.BINCOUNT_NGLDM_BOOL";
-	public static final String BinCountNGLDM = "RadiomicsJ.BINCOUNT_NGLDM_INT";
-	public static final String BinWidthNGLDM = "RadiomicsJ.BINWIDTH_NGLDM_DOUBLE";
-	public static final String AlphaNGLDM = "RadiomicsJ.ALPHA_NGLDM_DOUBLE";
-	public static final String DeltaNGLDM = "RadiomicsJ.DELTA_NGLDM_DOUBLE";
+	public static final String UseBinCountNGLDM = "BINCOUNT_NGLDM_BOOL";
+	public static final String BinCountNGLDM = "BINCOUNT_NGLDM_INT";
+	public static final String BinWidthNGLDM = "BINWIDTH_NGLDM_DOUBLE";
+	public static final String AlphaNGLDM = "ALPHA_NGLDM_DOUBLE";
+	public static final String DeltaNGLDM = "DELTA_NGLDM_DOUBLE";
 //	public static final String NormNGLDM = "NORM_NGLDM_STRING";
 	
-	public static final String BoxSizesFRACTAL = "RadiomicsJ.BOXSIZES_FRACTAL";
+	public static final String BoxSizesFRACTAL = "BOXSIZES_FRACTAL";
 	
 	/**
      * 指定されたオブジェクトからString型のインスタンスフィールドの値をリストとして取得します。

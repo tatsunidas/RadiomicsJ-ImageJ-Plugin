@@ -1,5 +1,6 @@
 import javax.swing.SwingUtilities;
 
+import ij.ImagePlus;
 import ij.plugin.PlugIn;
 import ui.RadiomicsWindow;
 
@@ -14,7 +15,16 @@ public class RadiomicsJ_ImageJPlugin implements PlugIn{
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				new RadiomicsJ_ImageJPlugin().run(null);
+				Class<?> clazz = RadiomicsJ_ImageJPlugin.class;
+				new ij.ImageJ();
+				ImagePlus image = ij.IJ.openImage("http://imagej.net/images/t1-head.zip");
+		        if (image != null) {
+		            image.show();
+		        }
+		        // 4. プラグインを即座に実行する
+		        //    IJ.runPlugIn("クラスの完全修飾名", "引数(あれば)");
+		        ij.IJ.runPlugIn(clazz.getName(), "");
+//				new RadiomicsJ_ImageJPlugin().run(null);
 			}
 		});
 	}

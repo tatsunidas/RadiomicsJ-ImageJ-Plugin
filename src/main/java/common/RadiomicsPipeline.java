@@ -182,8 +182,11 @@ public class RadiomicsPipeline {
 			return;
 		}
 		ResultsTable rt = null;
+		int total = roiset.size();
 		for (String className : roiset.keySet()) {
 			List<Roi> rois = roiset.get(className);
+			
+			int itr =1;
 			ResultsTable rt_ = calcAllFeatures(setting, rois, prap);
 			// add target label to calculation results
 			for (int i = 0; i < rt_.size(); i++) {
@@ -191,6 +194,7 @@ public class RadiomicsPipeline {
 				//rt_.save(className+"_trainDataset.csv");//debug
 			}
 			rt = combineTables(rt/* null-able */, rt_);
+			ij.IJ.showProgress(itr++, total);
 		}
 		
 		//rt.save("trainingDataset.csv");//debug
@@ -201,7 +205,7 @@ public class RadiomicsPipeline {
 			System.out.println(e.getMessage());
 		}
 		
-		System.out.println("Classifierを訓練中...");
+		System.out.println("Training Classifier...");
 		try {
 			if (clf instanceof OptionHandler && model_options != null) {
 				OptionHandler optionHandler = (OptionHandler) clf;
@@ -258,15 +262,15 @@ public class RadiomicsPipeline {
 			dest += ".model";
 		}
 		try {
-            SerializationHelper.write(dest, classifierToSave);
-            System.out.println("WEKAモデルが正常に保存されました: " + dest);
-        } catch (IOException e) {
-            System.err.println("モデルの保存/読み込み中にIOエラーが発生しました: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.err.println("その他のエラーが発生しました: " + e.getMessage());
-            e.printStackTrace();
-        }
+			SerializationHelper.write(dest, classifierToSave);
+			ij.IJ.log("WEKA model is loaded correctly: " + dest);
+		} catch (IOException e) {
+			ij.IJ.log("IOError was occured when loading model.: " + e.getMessage());
+			e.printStackTrace();
+		} catch (Exception e) {
+			ij.IJ.log("Error what is this?: " + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -288,12 +292,11 @@ public class RadiomicsPipeline {
 			// （オプション）圧縮して保存したい場合
 			// saver.setCompressOutput(true); // .arff.gz 形式で保存されます
 			saver.writeBatch(); // または saver.writeIncremental() を使用することも可能
-			System.out.println("InstancesがARFFファイルに正常に保存されました: " + outputFile.getAbsolutePath());
+			System.out.println("Instances is saved as ARFF file: " + outputFile.getAbsolutePath());
 		} catch (IOException e) {
-			System.err.println("ARFFファイルの保存中にI/Oエラーが発生しました: " + e.getMessage());
+			System.err.println("Error, When saving ARFF file, occuer I/O error: " + e.getMessage());
 			e.printStackTrace();
 		} catch (Exception e) {
-			System.err.println("その他のエラーが発生しました: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -320,38 +323,46 @@ public class RadiomicsPipeline {
 		}
 		Boolean useBinCountHist = Boolean.valueOf((String)settingsProp.get(SettingsContext.UseBinCountHISTOGRAM));
 		Integer binCountHist = Integer.valueOf((String)settingsProp.get(SettingsContext.BinCountHISTOGRAM));
-		Double binWidthHist = Double.valueOf((String)settingsProp.get(SettingsContext.BinWidthHISTOGRAM));
+		String bwHist = (String)settingsProp.get(SettingsContext.BinWidthHISTOGRAM);
+		Double binWidthHist = bwHist == null ? null:Double.valueOf(bwHist);
 		
 		Boolean useOriginalIVH = Boolean.valueOf((String)settingsProp.get(SettingsContext.UseOriginalIVH));
 		Boolean useBinCountIVH = Boolean.valueOf((String)settingsProp.get(SettingsContext.UseBinCountIVH));
 		Integer binCountIVH = Integer.valueOf((String)settingsProp.get(SettingsContext.BinCountIVH));
-		Double binWidthIVH = Double.valueOf((String)settingsProp.get(SettingsContext.BinWidthIVH));
+		String bwIVH = (String)settingsProp.get(SettingsContext.BinWidthIVH);
+		Double binWidthIVH = bwIVH == null ? null:Double.valueOf(bwIVH);
 		
 		Boolean useBinCountGLCM = Boolean.valueOf((String)settingsProp.get(SettingsContext.UseBinCountGLCM));
 		Integer binCountGLCM = Integer.valueOf((String)settingsProp.get(SettingsContext.BinCountGLCM));
-		Double binWidthGLCM = Double.valueOf((String)settingsProp.get(SettingsContext.BinWidthGLCM));
+		String bwGLCM = (String)settingsProp.get(SettingsContext.BinWidthGLCM);
+		Double binWidthGLCM = bwGLCM == null ? null:Double.valueOf(bwGLCM);
 		Integer deltaGLCM = Integer.valueOf((String)settingsProp.get(SettingsContext.DeltaGLCM));
 		
 		Boolean useBinCountGLRLM = Boolean.valueOf((String)settingsProp.get(SettingsContext.UseBinCountGLRLM));
 		Integer binCountGLRLM = Integer.valueOf((String)settingsProp.get(SettingsContext.BinCountGLRLM));
-		Double binWidthGLRLM = Double.valueOf((String)settingsProp.get(SettingsContext.BinWidthGLRLM));
+		String bwGLRLM = (String)settingsProp.get(SettingsContext.BinWidthGLRLM);
+		Double binWidthGLRLM = bwGLRLM == null ? null:Double.valueOf(bwHist);
 		
 		Boolean useBinCountGLSZM = Boolean.valueOf((String)settingsProp.get(SettingsContext.UseBinCountGLSZM));
 		Integer binCountGLSZM = Integer.valueOf((String)settingsProp.get(SettingsContext.BinCountGLSZM));
-		Double binWidthGLSZM = Double.valueOf((String)settingsProp.get(SettingsContext.BinWidthGLSZM));
+		String bwGLSZM = (String)settingsProp.get(SettingsContext.BinWidthGLSZM);
+		Double binWidthGLSZM = bwGLSZM == null ? null:Double.valueOf(bwGLSZM);
 		
 		Boolean useBinCountGLDZM = Boolean.valueOf((String)settingsProp.get(SettingsContext.UseBinCountGLDZM));
 		Integer binCountGLDZM = Integer.valueOf((String)settingsProp.get(SettingsContext.BinCountGLDZM));
-		Double binWidthGLDZM = Double.valueOf((String)settingsProp.get(SettingsContext.BinWidthGLDZM));
+		String bwGLDZM = (String)settingsProp.get(SettingsContext.BinWidthGLDZM);
+		Double binWidthGLDZM = bwGLDZM == null ? null:Double.valueOf(bwGLDZM);
 		
 		Boolean useBinCountNGTDM = Boolean.valueOf((String)settingsProp.get(SettingsContext.UseBinCountNGTDM));
 		Integer binCountNGTDM = Integer.valueOf((String)settingsProp.get(SettingsContext.BinCountNGTDM));
-		Double binWidthNGTDM = Double.valueOf((String)settingsProp.get(SettingsContext.BinWidthNGTDM));
+		String bwNGTDM = (String)settingsProp.get(SettingsContext.BinWidthNGTDM);
+		Double binWidthNGTDM = bwNGTDM == null ? null:Double.valueOf(bwNGTDM);
 		Integer deltaNGTDM = Integer.valueOf((String)settingsProp.get(SettingsContext.DeltaNGTDM));
 		
 		Boolean useBinCountNGLDM = Boolean.valueOf((String)settingsProp.get(SettingsContext.UseBinCountNGLDM));
 		Integer binCountNGLDM = Integer.valueOf((String)settingsProp.get(SettingsContext.BinCountNGLDM));
-		Double binWidthNGLDM = Double.valueOf((String)settingsProp.get(SettingsContext.BinWidthNGLDM));
+		String bwNGLDM = (String)settingsProp.get(SettingsContext.BinWidthNGLDM);
+		Double binWidthNGLDM = bwNGLDM == null ? null:Double.valueOf(bwNGLDM);
 		Integer alphaNGLDM = Integer.valueOf((String)settingsProp.get(SettingsContext.AlphaNGLDM));
 		Integer deltaNGLDM = Integer.valueOf((String)settingsProp.get(SettingsContext.DeltaNGLDM));
 		
@@ -404,9 +415,9 @@ public class RadiomicsPipeline {
 				if(ivhf!=null) break;
 				int mode = 0;
 				if(useOriginalIVH==false && useBinCountIVH==false) {
-					mode=2;
+					mode=1;
 				}else if(useBinCountIVH==true) {
-					mode =1;
+					mode =2;
 				}
 				RadiomicsJ.IVH_binCount = binCountIVH;
 				RadiomicsJ.IVH_binWidth = binWidthIVH;
@@ -490,9 +501,6 @@ public class RadiomicsPipeline {
 					if(name.equals(t.name())) {
 						Double v = shape2d.calculate(t.id());
 						v = v == null ? Double.NaN:v;
-//						if(name.startsWith("PixelSur")) {
-//							System.out.println(v);
-//						}
 						rt.addValue(fname, v);
 					}
 				}
@@ -500,21 +508,27 @@ public class RadiomicsPipeline {
 			case SettingsContext.MORPHOLOGICAL:
 				for(MorphologicalFeatureType t:MorphologicalFeatureType.values()) {
 					if(name.equals(t.name())) {
-						rt.addValue(fname, mf.calculate(t.id()));
+						Double v = mf.calculate(t.id());
+						v = v == null ? Double.NaN:v;
+						rt.addValue(fname, v);
 					}
 				}
 				break;
 			case SettingsContext.LOCALINTENSITY:
 				for(LocalIntensityFeatureType t:LocalIntensityFeatureType.values()) {
 					if(name.equals(t.name())) {
-						rt.addValue(fname, lif.calculate(t.id()));
+						Double v = lif.calculate(t.id());
+						v = v == null ? Double.NaN:v;
+						rt.addValue(fname, v);
 					}
 				}
 				break;
 			case SettingsContext.INTENSITYSTATS:
 				for(IntensityBasedStatisticalFeatureType t:IntensityBasedStatisticalFeatureType.values()) {
 					if(name.equals(t.name())) {
-						rt.addValue(fname, isf.calculate(t.id()));
+						Double v = isf.calculate(t.id());
+						v = v == null ? Double.NaN:v;
+						rt.addValue(fname, v);
 					}
 				}
 				break;
@@ -522,7 +536,9 @@ public class RadiomicsPipeline {
 				for(IntensityHistogramFeatureType t:IntensityHistogramFeatureType.values()) {
 					if(name.equals(t.name())) {
 						try {
-							rt.addValue(fname, ihf.calculate(t.id()));
+							Double v = ihf.calculate(t.id());
+							v = v == null ? Double.NaN:v;
+							rt.addValue(fname, v);
 						} catch ( Exception e) {
 							e.printStackTrace();
 						}
@@ -533,7 +549,9 @@ public class RadiomicsPipeline {
 				for(IntensityVolumeHistogramFeatureType t:IntensityVolumeHistogramFeatureType.values()) {
 					if(name.equals(t.name())) {
 						try {
-							rt.addValue(fname, ivhf.calculate(t.id()));
+							Double v = ivhf.calculate(t.id());
+							v = v == null ? Double.NaN:v;
+							rt.addValue(fname, v);
 						} catch ( Exception e) {
 							e.printStackTrace();
 						}
@@ -544,7 +562,9 @@ public class RadiomicsPipeline {
 				for(GLCMFeatureType t:GLCMFeatureType.values()) {
 					if(name.equals(t.name())) {
 						try {
-							rt.addValue(fname, glcm.calculate(t.id()));
+							Double v = glcm.calculate(t.id());
+							v = v == null ? Double.NaN:v;
+							rt.addValue(fname, v);
 						} catch ( Exception e) {
 							e.printStackTrace();
 						}
@@ -555,7 +575,9 @@ public class RadiomicsPipeline {
 				for(GLRLMFeatureType t:GLRLMFeatureType.values()) {
 					if(name.equals(t.name())) {
 						try {
-							rt.addValue(fname, glrlm.calculate(t.id()));
+							Double v = glrlm.calculate(t.id());
+							v = v == null ? Double.NaN:v;
+							rt.addValue(fname, v);
 						} catch ( Exception e) {
 							e.printStackTrace();
 						}
@@ -566,7 +588,9 @@ public class RadiomicsPipeline {
 				for(GLSZMFeatureType t:GLSZMFeatureType.values()) {
 					if(name.equals(t.name())) {
 						try {
-							rt.addValue(fname, glszm.calculate(t.id()));
+							Double v = glszm.calculate(t.id());
+							v = v == null ? Double.NaN:v;
+							rt.addValue(fname, v);
 						} catch ( Exception e) {
 							e.printStackTrace();
 						}
@@ -577,7 +601,9 @@ public class RadiomicsPipeline {
 				for(GLDZMFeatureType t:GLDZMFeatureType.values()) {
 					if(name.equals(t.name())) {
 						try {
-							rt.addValue(fname, gldzm.calculate(t.id()));
+							Double v = gldzm.calculate(t.id());
+							v = v == null ? Double.NaN:v;
+							rt.addValue(fname, v);
 						} catch ( Exception e) {
 							e.printStackTrace();
 						}
@@ -588,7 +614,9 @@ public class RadiomicsPipeline {
 				for(NGTDMFeatureType t:NGTDMFeatureType.values()) {
 					if(name.equals(t.name())) {
 						try {
-							rt.addValue(fname, ngtdm.calculate(t.id()));
+							Double v = ngtdm.calculate(t.id());
+							v = v == null ? Double.NaN:v;
+							rt.addValue(fname, v);
 						} catch ( Exception e) {
 							e.printStackTrace();
 						}
@@ -599,7 +627,9 @@ public class RadiomicsPipeline {
 				for(NGLDMFeatureType t:NGLDMFeatureType.values()) {
 					if(name.equals(t.name())) {
 						try {
-							rt.addValue(fname, ngldm.calculate(t.id()));
+							Double v = ngldm.calculate(t.id());
+							v = v == null ? Double.NaN:v;
+							rt.addValue(fname, v);
 						} catch ( Exception e) {
 							e.printStackTrace();
 						}
@@ -610,7 +640,9 @@ public class RadiomicsPipeline {
 				for(FractalFeatureType t:FractalFeatureType.values()) {
 					if(name.equals(t.name())) {
 						try {
-							rt.addValue(fname, ff.calculate(t.id()));
+							Double v = ff.calculate(t.id());
+							v = v == null ? Double.NaN:v;
+							rt.addValue(fname, v);
 						} catch ( Exception e) {
 							e.printStackTrace();
 						}
@@ -647,8 +679,8 @@ public class RadiomicsPipeline {
 			ImagePlus imp = prap;
 			for (Roi r : rois) {
 				int pos = r.getPosition();
-				if(pos == -1) {
-					System.out.println("This roi can not asign any slices...sklip.:"+r.getName());
+				if(pos <= 0) {
+					ij.IJ.log("This roi can not asign any slices...sklip.:"+r.getName());
 					continue;
 				}
 				ImagePlus slice = new ImagePlus("", imp.getStack().getProcessor(pos));
@@ -1076,9 +1108,9 @@ public class RadiomicsPipeline {
 			}
 			trainingDataset.add(record);
 		}
-		System.out.println("データセットが正常にロードされました。");
-		System.out.println("インスタンス数: " + trainingDataset.numInstances());
-		System.out.println("属性数: " + trainingDataset.numAttributes());
+		System.out.println("Dataset is loaded.");
+		System.out.println("Number of instances: " + trainingDataset.numInstances());
+		System.out.println("Number of features: " + trainingDataset.numAttributes());
 		
 		if (impute) {
 			// 3. ReplaceMissingValuesフィルターのインスタンスを作成
@@ -1088,10 +1120,10 @@ public class RadiomicsPipeline {
 				replacer.setInputFormat(trainingDataset);
 				// 新しいデータセットを取得
 				trainingDataset = Filter.useFilter(trainingDataset, replacer);
-				System.out.println("\n--- 平均値で補完しました ---");
+				System.out.println("\n--- Imputation with mean value, done. ---");
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("Simple measn imputation was Failed...");
+				System.out.println("Simple mean imputation was Failed...");
 			}
 		}
 		
@@ -1387,7 +1419,35 @@ public class RadiomicsPipeline {
 			return null;
 		}
 		
-		int patchSize = 15;//keep odd value.
+		Properties prop = setting.currentSettings();
+		
+		String patchSizeStr = prop.getProperty(SettingsContext.PREDICTION_FilterSize);
+		int patchSize = 15;
+		if(patchSizeStr != null) {
+			try {
+				patchSize = Integer.parseInt(patchSizeStr);
+				if(patchSize < 5) {
+					patchSize = 5;
+					ij.IJ.log("Prediction patch size should be > 4. now, set to 5.");
+				}
+			}catch(NumberFormatException e) {
+				//do nothing
+			}
+		}
+		
+		String strideStr = prop.getProperty(SettingsContext.PREDICTION_Stride);
+		int stride = 4;
+		if(strideStr != null) {
+			try {
+				stride = Integer.parseInt(strideStr);
+				if(stride < 1) {
+					stride = 1;
+					ij.IJ.log("Prediction stride size should be > 0. now, set to 1.");
+				}
+			}catch(NumberFormatException e) {
+				//do nothing
+			}
+		}
 		
 		// 説明変数の名前を格納するリスト
 		List<String> featureNames = new ArrayList<>();
@@ -1410,23 +1470,28 @@ public class RadiomicsPipeline {
 		//imp = new ImagePlus("", imp.getStack().getProcessor(slidePos+1));//DO NOT DO THIS
 		int w = imp.getWidth();
 		int h = imp.getHeight();
-		Properties prop = setting.currentSettings();
+		
+		// 1. stride image
+		int smallW = (int) Math.ceil((double) w / stride);
+		int smallH = (int) Math.ceil((double) h / stride);
+
+		FloatProcessor smallLabelImg = new FloatProcessor(smallW, smallH);
+		FloatProcessor smallProbaImg = new FloatProcessor(smallW, smallH);
 		
 //		boolean is3D = ((String)prop.get(SettingsContext.D3Basis)).equals("true");
 		boolean is3D = false;//TODO
 		
 		int label = Integer.valueOf((String)prop.get(SettingsContext.MASK_LABEL));
 		
-		FloatProcessor labelImg = new FloatProcessor(w,h);
-		FloatProcessor probaImg = new FloatProcessor(w,h);
-		
 		// 予測用インスタンスの受け皿となる、ヘッダー情報のみの空のデータセットを作成
 		Instances predictionHeader = new Instances(trainingDataset, 0);
 		// クラス属性のインデックスをセット（ヘッダーコピー時に引き継がれるが念のため）
 		predictionHeader.setClassIndex(predictionHeader.numAttributes() - 1);
 		
-		for (int j = 0; j < h; j++) {
-			for (int i = 0; i < w; i++) {
+		int outY = 0;
+		for (int j = 0; j < h; j+=stride) {
+			int outX = 0;
+			for (int i = 0; i < w; i+=stride) {
 				try {
 					ImagePlus patch_img = cropAndPadImage3D(imp, i, j, slidePos, patchSize, patchSize,
 							is3D ? patchSize : 1);
@@ -1460,17 +1525,27 @@ public class RadiomicsPipeline {
 					// 各クラスに属する確率分布の予測
 					double[] proba = clf.distributionForInstance(inst);
 					int predClassLabel = getIndexOfMaxValue(proba);
-					labelImg.setf(i, j, (float) predClassLabel);
-					probaImg.setf(i, j, (float) proba[predClassLabel]);
+					// 3. 小さいProcessorにセット（座標は outX, outY を使用）
+					smallLabelImg.setf(outX, outY, (float) predClassLabel);
+					smallProbaImg.setf(outX, outY, (float) proba[predClassLabel]);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				outX++;
 			}
+			outY++;
+			ij.IJ.showProgress(j + 1, h);
 		}
 		
-		ImageStack pstack = new ImageStack(w,h);
-		pstack.addSlice(labelImg);
-		pstack.addSlice(probaImg);
+		smallLabelImg.setInterpolationMethod(ImageProcessor.BILINEAR);
+		FloatProcessor finalLabelImg = (FloatProcessor) smallLabelImg.resize(w, h);
+		
+		smallProbaImg.setInterpolationMethod(ImageProcessor.BILINEAR);
+		FloatProcessor finalProbaImg = (FloatProcessor) smallProbaImg.resize(w, h);
+		
+		ImageStack pstack = new ImageStack(w, h);
+		pstack.addSlice(finalLabelImg);
+		pstack.addSlice(finalProbaImg);
 		ImagePlus preds = new ImagePlus("result", pstack);
 		
 		return preds;

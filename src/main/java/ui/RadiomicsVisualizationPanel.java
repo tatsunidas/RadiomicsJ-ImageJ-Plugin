@@ -254,9 +254,9 @@ public class RadiomicsVisualizationPanel extends JPanel {
        JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
        savePanel.setBorder(BorderFactory.createTitledBorder("Save Results"));
        saveMapButton = new JButton("Save Map to File...");
-       saveMapToDbButton = new JButton("Save Map to DB");
+//       saveMapToDbButton = new JButton("Save Map to DB");
        savePanel.add(saveMapButton);
-       savePanel.add(saveMapToDbButton);
+//       savePanel.add(saveMapToDbButton);
        gbc.gridy++;
        configPanel.add(savePanel, gbc);
        

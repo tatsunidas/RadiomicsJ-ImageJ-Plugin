@@ -37,12 +37,12 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
+import common.ConfigManager;
 import common.RadiomicsPipeline;
 import common.RadiomicsSettings;
 import common.SettingsContext;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.Prefs;
 import ij.WindowManager;
 import ij.gui.Roi;
 import ij.io.RoiDecoder;
@@ -346,7 +346,6 @@ public class RadiomicsPanel extends JPanel{
 		chooser.setMultiSelectionEnabled(false);
 		chooser.setDialogTitle("Select folder");
 		int userSelection = chooser.showOpenDialog(this);
-		// ユーザーが「開く」ボタンを押したかどうかをチェック
 		if (userSelection == JFileChooser.APPROVE_OPTION) {
 			File selectedDirectory = chooser.getSelectedFile();
 			saveRois(getRois(), selectedDirectory);
@@ -362,7 +361,7 @@ public class RadiomicsPanel extends JPanel{
 			 */
 			pipeline.saveDatasetARFF(selectedDirectory.getAbsolutePath() + File.separator + "traindataset");
 		} else {
-			System.out.println("フォルダ選択がキャンセルされました。");
+			System.out.println("Cancel select folder");
 		}
 	}
 	
@@ -388,12 +387,17 @@ public class RadiomicsPanel extends JPanel{
 	}
 	
 	public void saveProp(Properties config) {
+		Properties clean = new Properties();
 		for(Object key : config.keySet()) {
 			String k = (String)key;
 			String v = config.getProperty(k);
-			Prefs.set(k, v);
+			if(!k.startsWith("RadiomicsJ.")) {
+				//use prefix.
+				k = "RadiomicsJ."+k;
+			}
+			clean.setProperty(k, v);
 		}
-		Prefs.savePreferences();
+		ConfigManager.saveProp(clean);
 	}
 	
 	
@@ -517,15 +521,16 @@ public class RadiomicsPanel extends JPanel{
 	}
 	
 	public void loadModelSettings() {
-		String v = Prefs.getString(BALANCE);
+		Properties props = ConfigManager.loadProp();
+		String v = props.getProperty("RadiomicsJ."+BALANCE);
 		if(v !=null) {
 			balance.setSelected(Boolean.valueOf(v));
 		}
-		v = Prefs.getString(FEATURE_SELECT);
+		v = props.getProperty("RadiomicsJ."+FEATURE_SELECT);
 		if(v !=null) {
 			autoFeatureSelect.setSelected(Boolean.valueOf(v));
 		}
-		v = Prefs.getString(IMPUTE);
+		v = props.getProperty("RadiomicsJ."+IMPUTE);
 		if(v !=null) {
 			autoImputation.setSelected(Boolean.valueOf(v));
 		}
@@ -579,6 +584,7 @@ public class RadiomicsPanel extends JPanel{
 				btn.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						ij.IJ.showStatus("prediting...", null);
 						RadiomicsSettings rs = radWin.getRadiomicsSettings();
 						HashMap<String, List<Roi>> ds = getRois();
 						ImagePlus pp = WindowManager.getCurrentImage();
@@ -588,7 +594,9 @@ public class RadiomicsPanel extends JPanel{
 						 * slice 1 : proba image
 						 */
 						pred = pipeline.predict(pp.getCurrentSlice());
-						System.out.println("PREDICTION was done !");
+						ij.IJ.log("PREDICTION was done ! Next, do push 'Show Results'");
+						ij.IJ.showStatus("predition was done.");
+						repaint();
 					}
 				});
 			}else if(name.equals(SHOW_RESULTS)) {
@@ -613,21 +621,15 @@ public class RadiomicsPanel extends JPanel{
 						if(pred != null) {
 							SaveDialog sd = new SaveDialog("Save prediction results", "pred_seg", ".tif");
 							if (sd.getFileName() == null) {
-					            //("キャンセルされました。");
-					            return; // 処理を中断
+					            return;
 					        }
-							// 3. ディレクトリとファイル名を取得
 					        String directory = sd.getDirectory();
 					        String fileName = sd.getFileName();
 					        String savePath = directory + fileName;
-
-					        // 結果をログに表示
-					        System.out.println("選択された保存パス: " + savePath);
-					        
 					        // 4. 取得したパスを使って画像を保存
 					        // このsaveAsメソッドが実際の保存処理を行います
 					        IJ.saveAs(pred, "tiff", savePath);
-					        System.out.println("完了:"+savePath + " に画像を保存しました。");
+					        System.out.println("Completed:Image save to :"+savePath);
 						}
 					}
 				});
@@ -659,14 +661,14 @@ public class RadiomicsPanel extends JPanel{
 						String className = JOptionPane.showInputDialog("Please input new class name:", null);
 						if (className != null) {
 							if (!className.trim().isEmpty()) {
-								System.out.println("入力されたクラス名: " + className);
+								System.out.println("Input class name: " + className);
 								addNewClass(className);
 							} else {
 								// 空白のみ、または何も入力せずにOKを押した場合
-								System.out.println("クラス名が入力されませんでした。");
+								System.out.println("Class name does not wrote.");
 							}
 						} else {
-							System.out.println("入力がキャンセルされました。");
+							System.out.println("Cancel input.");
 						}
 					}
 				});
@@ -695,12 +697,10 @@ public class RadiomicsPanel extends JPanel{
 				        if (result == JOptionPane.OK_OPTION) {
 				            // OKボタンが押された場合、選択されたアイテムを取得
 				            String selectedOption = (String) comboBox.getSelectedItem();
-				            System.out.println("選択されたクラス: " + selectedOption);
+				            System.out.println("Selected : " + selectedOption);
 				            deleteClass(selectedOption);
 				        } else {
-				            // Cancelボタンが押されたか、ダイアログが閉じられた場合
-				            System.out.println("選択がキャンセルされました。");
-				            JOptionPane.showMessageDialog(null, "選択がキャンセルされました。", "キャンセル", JOptionPane.INFORMATION_MESSAGE);
+				            System.out.println("Cancel select");
 				        }
 					}
 				});
@@ -749,9 +749,19 @@ public class RadiomicsPanel extends JPanel{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					ImagePlus im = WindowManager.getCurrentImage();
+					if (im == null) {
+					    IJ.log("Error: image is null");
+					    return;
+					}
 					Roi r = im.getRoi();
-					if(r != null) {
-						add(r);
+					if (r != null) {
+					    IJ.log("SUCCESS Getting a ROI from current ImagePlus: " + r.getTypeAsString());
+					    r.setPosition(im);
+					    r.setImage(im);
+					    r.setName(r.getTypeAsString()+"_"+r.hashCode());
+					    add(r);
+					} else {
+					    IJ.log("ROI is null)");
 					}
 				}
 			});
@@ -784,7 +794,7 @@ public class RadiomicsPanel extends JPanel{
 		
 		void add(Roi r) {
 			if(listModel.contains(r)) {
-				System.out.println(r.getName() + " is already listed.");
+				IJ.log(r.getName() + " is already listed.");
 				return;
 			}
 			String name = r.getName();
@@ -797,6 +807,7 @@ public class RadiomicsPanel extends JPanel{
 				}
 			}
 			listModel.add(listModel.getSize(), r);
+			IJ.log(name + " is added !");
 		}
 		
 		void delete(Roi r) {
@@ -836,14 +847,15 @@ public class RadiomicsPanel extends JPanel{
 
 		@Override
 		public Component getListCellRendererComponent(JList<?> list,
-				Object value, // RoiObj
+				Object value, // Roi
 				int index, 
 				boolean isSelected,
 				boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			if (value instanceof Roi) {
 				Roi roi = (Roi) value;
-				setText(roi.getName());
+				String name = roi.getName();
+				setText(name);
 			} else {
 				setText((value == null) ? "" : value.toString());
 			}

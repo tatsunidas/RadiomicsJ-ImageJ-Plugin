@@ -77,7 +77,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.NumberFormatter;
 
-import ij.Prefs;
 import io.github.tatsunidas.radiomics.features.FractalFeatureType;
 import io.github.tatsunidas.radiomics.features.GLCMFeatureType;
 import io.github.tatsunidas.radiomics.features.GLDZMFeatureType;
@@ -102,6 +101,10 @@ public class RadiomicsSettings extends JPanel{
 	// 2d/3d switch, when turn on, images will calculate slice by slice
 	// currently, 2d-basis is set to default.
 	boolean d3_basis = false;
+	ButtonGroup dimGroup;
+	JRadioButton d2Btn;
+	JRadioButton d3Btn;
+	
 	//label
 	final int defaultLabel = 1;
 	//remove outlier
@@ -298,7 +301,7 @@ public class RadiomicsSettings extends JPanel{
 		JPanel dimPanel = new JPanel();
 		addBorder(dimPanel, Color.white, "Computational Dimension");
 		//3d/2d
-		JRadioButton d2Btn = new JRadioButton("2D basis");
+		d2Btn = new JRadioButton("2D basis");
 		d2Btn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -308,7 +311,7 @@ public class RadiomicsSettings extends JPanel{
 				}
 			}
 		});
-		JRadioButton d3Btn = new JRadioButton("3D basis");
+		d3Btn = new JRadioButton("3D basis");
 //		d3Btn.setEnabled(false);//calculation time too long...
 		d3Btn.addActionListener(new ActionListener() {
 			@Override
@@ -322,7 +325,7 @@ public class RadiomicsSettings extends JPanel{
 		dimPanel.add(d2Btn);
 		dimPanel.add(d3Btn);
 		base.add(dimPanel, BorderLayout.NORTH);
-		ButtonGroup dimGroup = new ButtonGroup();
+		dimGroup = new ButtonGroup();
 		dimGroup.add(d2Btn);
 		dimGroup.add(d3Btn);
 //		dimGroup.setSelected(d3Btn.getModel(), d3_basis);
@@ -1104,15 +1107,26 @@ public class RadiomicsSettings extends JPanel{
 		p.setBorder(BorderFactory.createTitledBorder(b, name, TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION));
 	}
 	
+	/**
+	 * load setting props from IJ.Prefs.
+	 */
 	public void loadSettings() {
 		try {
 			List<String> params = SettingsContext.getStringFieldValues();
+			Properties props = ConfigManager.loadProp();
 			for(String key : params) {
-				String val = Prefs.getString(key);
+				//check prefix
+				if(!key.startsWith("RadiomicsJ.")) {
+					key = "RadiomicsJ." + key;
+				}
+				String val = props.getProperty(key);
 				if(val == null || val.equals("") || val.toLowerCase().equals("null") ) {
 					//keep default
 					continue;
 				}
+				//back to original
+				key = key.replace("RadiomicsJ.", "");
+				
 				switch (key) {
 				/**
 				 * mask settings
@@ -1540,8 +1554,8 @@ public class RadiomicsSettings extends JPanel{
 				/*
 				 * EXCLUSION key is specify Exfeature name.
 				 */
-				if(key.startsWith("EXCLUSION")) {
-					String fname = key.replace("EXCLUSION_", "");
+				if(key.startsWith("RadiomicsJ."+SettingsContext.EXCLUSION_PREFIX)) {
+					String fname = key.replace("RadiomicsJ.EXCLUSION_", "");
 					String fullFam = fullFamilyNameToShort(fname.split("_")[0]);
 					fname = fullFam + "_" + fname.split("")[1];
 					addList(fname, exclusionListModel);
@@ -1675,7 +1689,9 @@ public class RadiomicsSettings extends JPanel{
 					prop.setProperty(key, String.valueOf(bcs_glcm.getValue()));
 					break;
 				case SettingsContext.BinWidthGLCM:
-					prop.setProperty(key, String.valueOf(bws_glcm.getValue()));
+					if(bws_glcm.getValue() != -1) {
+						prop.setProperty(key, String.valueOf(bws_glcm.getValue()));
+					}
 					break;
 				case SettingsContext.DeltaGLCM:
 					prop.setProperty(key, String.valueOf(delta_glcm.getValue()));
@@ -1690,7 +1706,9 @@ public class RadiomicsSettings extends JPanel{
 					prop.setProperty(key, String.valueOf(bcs_glrlm.getValue()));
 					break;
 				case SettingsContext.BinWidthGLRLM:
-					prop.setProperty(key, String.valueOf(bws_glrlm.getValue()));
+					if(bws_glrlm.getValue() != -1) {
+						prop.setProperty(key, String.valueOf(bws_glrlm.getValue()));
+					}
 					break;
 //				case SettingsContext.NormGLRLM:
 //					prop.setProperty(key, norm_glrlm.getSelectedItem());
@@ -1702,7 +1720,9 @@ public class RadiomicsSettings extends JPanel{
 					prop.setProperty(key, String.valueOf(bcs_glszm.getValue()));
 					break;
 				case SettingsContext.BinWidthGLSZM:
-					prop.setProperty(key, String.valueOf(bws_glszm.getValue()));
+					if(bws_glszm.getValue() != -1) {
+						prop.setProperty(key, String.valueOf(bws_glszm.getValue()));
+					}
 					break;
 //				case SettingsContext.NormGLSZM:
 //					prop.setProperty(key, norm_glszm.getSelectedItem());
@@ -1714,7 +1734,9 @@ public class RadiomicsSettings extends JPanel{
 					prop.setProperty(key, String.valueOf(bcs_gldzm.getValue()));
 					break;
 				case SettingsContext.BinWidthGLDZM:
-					prop.setProperty(key, String.valueOf(bws_gldzm.getValue()));
+					if(bws_gldzm.getValue() != -1) {
+						prop.setProperty(key, String.valueOf(bws_gldzm.getValue()));
+					}
 					break;
 //				case SettingsContext.NormGLDZM:
 //					prop.setProperty(key, norm_gldzm.getSelectedItem());
@@ -1726,7 +1748,9 @@ public class RadiomicsSettings extends JPanel{
 					prop.setProperty(key, String.valueOf(bcs_ngtdm.getValue()));
 					break;
 				case SettingsContext.BinWidthNGTDM:
-					prop.setProperty(key, String.valueOf(bws_ngtdm.getValue()));
+					if(bws_ngtdm.getValue() != -1) {
+						prop.setProperty(key, String.valueOf(bws_ngtdm.getValue()));
+					}
 					break;
 				case SettingsContext.DeltaNGTDM:
 					prop.setProperty(key, String.valueOf(delta_ngtdm.getValue()));
@@ -1741,7 +1765,9 @@ public class RadiomicsSettings extends JPanel{
 					prop.setProperty(key, String.valueOf(bcs_ngldm.getValue()));
 					break;
 				case SettingsContext.BinWidthNGLDM:
-					prop.setProperty(key, String.valueOf(bws_ngldm.getValue()));
+					if(bws_ngldm.getValue() != -1) {
+						prop.setProperty(key, String.valueOf(bws_ngldm.getValue()));
+					}
 					break;
 				case SettingsContext.AlphaNGLDM:
 					prop.setProperty(key, String.valueOf(alpha_ngldm.getValue()));
@@ -1759,7 +1785,9 @@ public class RadiomicsSettings extends JPanel{
 					prop.setProperty(key, String.valueOf(bcs_hist.getValue()));
 					break;
 				case SettingsContext.BinWidthHISTOGRAM:
-					prop.setProperty(key, String.valueOf(bws_hist.getValue()));
+					if(bws_hist.getValue() != -1) {
+						prop.setProperty(key, String.valueOf(bws_hist.getValue()));
+					}
 					break;
 				case SettingsContext.UseOriginalIVH:
 					prop.setProperty(key, String.valueOf(useOrg_ivh.isSelected()));
@@ -1771,7 +1799,9 @@ public class RadiomicsSettings extends JPanel{
 					prop.setProperty(key, String.valueOf(bcs_ivh.getValue()));
 					break;
 				case SettingsContext.BinWidthIVH:
-					prop.setProperty(key, String.valueOf(bws_ivh.getValue()));
+					if(bws_ivh.getValue() != -1) {
+						prop.setProperty(key, String.valueOf(bws_ivh.getValue()));
+					}
 					break;
 				case SettingsContext.BoxSizesFRACTAL:
 					prop.setProperty(key, String.valueOf(boxsize_fractal.getText()));
@@ -1789,7 +1819,7 @@ public class RadiomicsSettings extends JPanel{
 			String ex_fname = exclusionListModel.get(k);
 			String fullFam = shortFamilyNameToFull(ex_fname.split("_")[0]);
 			ex_fname = fullFam + "_" + ex_fname.split("_")[1];
-			prop.setProperty("EXCLUSION_"+ex_fname, ex_fname/*dummy*/);
+			prop.setProperty(SettingsContext.EXCLUSION_PREFIX+"_"+ex_fname, ex_fname/*dummy*/);
 		}
 		return prop;
 	}
@@ -1848,11 +1878,12 @@ public class RadiomicsSettings extends JPanel{
 	
 	public void addList(String name, DefaultListModel<String> listModel) {
 		if (listModel.contains(name)) {
-			if(listModel == targetListModel) {
-				System.out.println(name + " is already listed in targetList");
-			}else {
-				System.out.println(name + " is already listed in exclusionList");
-			}
+			//debug
+//			if(listModel == targetListModel) {
+//				System.out.println(name + " is already listed in targetList");
+//			}else {
+//				System.out.println(name + " is already listed in exclusionList");
+//			}
 			return;
 		}
 		listModel.add(listModel.getSize(), name);
@@ -1918,8 +1949,10 @@ public class RadiomicsSettings extends JPanel{
 	}
 	
 	private void switch2D3D(boolean is3D) {
+		//switch target <-> exclusion
 		morphologicalChk.doClick();
 		shape2dChk.doClick();
+		//change radio button
 		if(is3D==true) {
 			if(shape2dChk.isSelected()) {
 				shape2dChk.doClick();//off
@@ -1927,8 +1960,10 @@ public class RadiomicsSettings extends JPanel{
 			shape2dChk.setEnabled(false);
 			morphologicalChk.setEnabled(true);
 			if(morphologicalChk.isSelected() == false) {
-				morphologicalChk.doClick();
+				morphologicalChk.doClick();//on
 			}
+			this.d3_basis = true;
+			dimGroup.setSelected(d3Btn.getModel(), true);
 		}else {
 			shape2dChk.setEnabled(true);
 			if(shape2dChk.isSelected() == false) {
@@ -1938,6 +1973,8 @@ public class RadiomicsSettings extends JPanel{
 				morphologicalChk.doClick();//off
 			}
 			morphologicalChk.setEnabled(false);
+			this.d3_basis = false;
+			dimGroup.setSelected(d2Btn.getModel(), true);
 		}
 		addDefaultExclusionBtn.doClick();
 		revalidate();
