@@ -52,6 +52,8 @@ Visualize specific Radiomics features on the image.
     The plugin calculates the specified features using a patch-based raster scan on the image-mask pair (stride=1).
     The calculation parameters are based on the configuration in Texture Settings.
     
+Note: In Texture Settings, the label configuration must match the actual label values of the loaded Mask image.
+    
 ### Configuration properties
 
 This plugin automatically save properties files to user.home/RadiomicsJ_IJ_Plugin.properties by "Save Configuration" function.
