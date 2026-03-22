@@ -924,8 +924,98 @@ public class RadiomicsSettings extends JPanel{
 		addBorder(ngldm, Color.gray, "NGLDM");
 		textureParamsP.add(ngldm);
 		
-		return texturesS;
+		
+		// Global params button
+		JPanel bulkPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		bulkPanel.setBorder(BorderFactory.createTitledBorder(
+			BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.MAGENTA, Color.DARK_GRAY), 
+			"Bulk Apply Texture Parameters"
+		));
+		
+		JRadioButton bulkCountRadio = new JRadioButton("Bin Count", true);
+		JRadioButton bulkWidthRadio = new JRadioButton("Bin Width");
+		ButtonGroup bulkGroup = new ButtonGroup();
+		bulkGroup.add(bulkCountRadio);
+		bulkGroup.add(bulkWidthRadio);
+		
+		// Global value
+		JFormattedTextField bulkValueField = formattedTextField(true, 10);
+		bulkValueField.setValue(16.0); // Default value
+		
+		JButton applyBulkBtn = new JButton("Apply to All Textures");
+		applyBulkBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boolean isWidth = bulkWidthRadio.isSelected();
+				
+				
+				double valDouble = 16.0;
+				int valInt = 16;
+				try {
+					Object v = bulkValueField.getValue();
+					if (v instanceof Double) {
+						valDouble = (Double) v;
+						valInt = ((Double) v).intValue();
+					} else if (v instanceof Integer) {
+						valInt = (Integer) v;
+						valDouble = ((Integer) v).doubleValue();
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				
+				// Apply to GLCM
+				bcs_glcm.getRadioButton().setSelected(!isWidth);
+				bws_glcm.getRadioButton().setSelected(isWidth);
+				if (isWidth) bws_glcm.setValue(valDouble); else bcs_glcm.setValue(valInt);
+				
+				// Apply to GLRLM
+				bcs_glrlm.getRadioButton().setSelected(!isWidth);
+				bws_glrlm.getRadioButton().setSelected(isWidth);
+				if (isWidth) bws_glrlm.setValue(valDouble); else bcs_glrlm.setValue(valInt);
+
+				// Apply to GLSZM
+				bcs_glszm.getRadioButton().setSelected(!isWidth);
+				bws_glszm.getRadioButton().setSelected(isWidth);
+				if (isWidth) bws_glszm.setValue(valDouble); else bcs_glszm.setValue(valInt);
+
+				// Apply to GLDZM
+				bcs_gldzm.getRadioButton().setSelected(!isWidth);
+				bws_gldzm.getRadioButton().setSelected(isWidth);
+				if (isWidth) bws_gldzm.setValue(valDouble); else bcs_gldzm.setValue(valInt);
+
+				// Apply to NGTDM
+				bcs_ngtdm.getRadioButton().setSelected(!isWidth);
+				bws_ngtdm.getRadioButton().setSelected(isWidth);
+				if (isWidth) bws_ngtdm.setValue(valDouble); else bcs_ngtdm.setValue(valInt);
+
+				// Apply to NGLDM
+				bcs_ngldm.getRadioButton().setSelected(!isWidth);
+				bws_ngldm.getRadioButton().setSelected(isWidth);
+				if (isWidth) bws_ngldm.setValue(valDouble); else bcs_ngldm.setValue(valInt);
+				
+				
+				repaint();
+			}
+		});
+		
+		bulkPanel.add(bulkCountRadio);
+		bulkPanel.add(bulkWidthRadio);
+		bulkPanel.add(new JLabel("Value:"));
+		bulkPanel.add(bulkValueField);
+		bulkPanel.add(applyBulkBtn);
+		
+
+		JPanel mainTexturePanel = new JPanel(new BorderLayout());
+		mainTexturePanel.add(bulkPanel, BorderLayout.NORTH);
+		mainTexturePanel.add(textureParamsP, BorderLayout.CENTER);
+		
+		JScrollPane mainScroll = new JScrollPane(mainTexturePanel);
+		mainScroll.setPreferredSize(new Dimension(400, 300));
+		
+		return mainScroll;
 	}
+
 	
 	private JScrollPane buildIntensityFamilyParam() {
 		/**
