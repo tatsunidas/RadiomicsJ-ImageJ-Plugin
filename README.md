@@ -8,9 +8,9 @@ This plugin was developed for educational and research purposes. It provides thr
     
 ## Installation
 
-    Download the RadiomicsJ_ImageJPlugin-***.jar file(*** means version) and radiomics_lib.zip
-    unzip radiomics_lib.zip to as "radiomics_lib" folder.
-    Place the both files into the plugins folder of your ImageJ or Fiji installation.
+    Download the RadiomicsJ_ImageJPlugin-***.jar file (*** means version) and radiomics_lib.zip.
+    Unzip radiomics_lib.zip into a "radiomics_lib" folder.
+    Place both items into the plugins folder of your ImageJ or Fiji installation.
     Restart ImageJ/Fiji.
 
 ## Usage
@@ -24,11 +24,11 @@ This module allows you to train a segmentation model using interactive ROI selec
     Follow the workflow: Train -> Prediction -> Show Results.
     Observe the segmentation results.
 
-Note: Prediction results are calculated using a patch&stride-based raster scan on the image. patch=15, stride=4 is default. If you would like to change these settings, set "PREDICTION_FilterSize" and "PREDICTION_Stride" in RadiomicsJ_IJ_Plugin.properties.
+Note: Prediction results are calculated using a patch-and-stride-based raster scan on the image. The defaults are patch=15 and stride=4. If you would like to change these settings, set "PREDICTION_FilterSize" and "PREDICTION_Stride" in RadiomicsJ_IJ_Plugin.properties.
 Note: The execution of the Prediction mode may take some time depending on the image size and feature settings.
 
-User can save calculated features and a trained model by using "Save Configurations".
-Calculated features is saved with "ARFF" format, so user can do more machine learning process using WEKA.
+Users can save calculated features and a trained model by using "Save Configurations".
+Calculated features are saved in "ARFF" format, so users can perform further machine learning processes using WEKA.
 
 ### Texture Settings
 
@@ -39,7 +39,7 @@ Configure the parameters for Radiomics feature calculation in this section.
         2D Mode: Calculates features slice by slice.
         3D Mode: Calculates volumetric features.
 
-Note: This settings is used to model training and visualization map.
+Note: These settings are used for model training and the visualization map.
 
 ### Batch Mode
 
@@ -56,8 +56,8 @@ Note: In Texture Settings, the label configuration must match the actual label v
     
 ### Configuration properties
 
-This plugin automatically save properties files to user.home/RadiomicsJ_IJ_Plugin.properties by "Save Configuration" function.
-If you would like to uninstall, remove this file, jar and radiomicsj_lib folder.
+This plugin automatically saves a properties file to user.home/RadiomicsJ_IJ_Plugin.properties when using the "Save Configurations" function.
+If you would like to uninstall, remove this properties file, the .jar file, and the radiomicsj_lib folder.
 
 ### Requirements
 
