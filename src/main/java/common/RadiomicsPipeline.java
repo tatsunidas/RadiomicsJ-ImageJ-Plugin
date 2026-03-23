@@ -341,7 +341,7 @@ public class RadiomicsPipeline {
 		Boolean useBinCountGLRLM = Boolean.valueOf((String)settingsProp.get(SettingsContext.UseBinCountGLRLM));
 		Integer binCountGLRLM = Integer.valueOf((String)settingsProp.get(SettingsContext.BinCountGLRLM));
 		String bwGLRLM = (String)settingsProp.get(SettingsContext.BinWidthGLRLM);
-		Double binWidthGLRLM = bwGLRLM == null ? null:Double.valueOf(bwHist);
+		Double binWidthGLRLM = bwGLRLM == null ? null:Double.valueOf(bwGLRLM);
 		
 		Boolean useBinCountGLSZM = Boolean.valueOf((String)settingsProp.get(SettingsContext.UseBinCountGLSZM));
 		Integer binCountGLSZM = Integer.valueOf((String)settingsProp.get(SettingsContext.BinCountGLSZM));
