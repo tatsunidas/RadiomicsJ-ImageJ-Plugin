@@ -25,10 +25,9 @@ public class ConfigManager {
 		File file = getConfigFile();
 		try (FileOutputStream out = new FileOutputStream(file)) {
 			config.store(out, "RadiomicsJ Configuration");
-			IJ.log("Saved config to: " + file.getAbsolutePath());
+			IJ.log("> [ConfigManager] Saved config to: " + file.getAbsolutePath());
 		} catch (IOException e) {
-			IJ.log("Failed to save config: " + e.getMessage());
-			e.printStackTrace();
+			IJ.log("[ERROR] ConfigManager failed to save config: " + e.getMessage());
 		}
 	}
 
@@ -39,7 +38,7 @@ public class ConfigManager {
 			try (FileInputStream in = new FileInputStream(file)) {
 				config.load(in);
 			} catch (IOException e) {
-				e.printStackTrace();
+			    IJ.log("[ERROR] ConfigManager failed to load config: " + e.getMessage());
 			}
 		}
 		return config;

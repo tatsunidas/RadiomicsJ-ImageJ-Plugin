@@ -584,7 +584,7 @@ public class RadiomicsPanel extends JPanel{
 				btn.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						ij.IJ.showStatus("prediting...", null);
+						ij.IJ.showStatus("Predicting..."); // Corregido: prediting -> Predicting
 						RadiomicsSettings rs = radWin.getRadiomicsSettings();
 						HashMap<String, List<Roi>> ds = getRois();
 						ImagePlus pp = WindowManager.getCurrentImage();
@@ -594,8 +594,8 @@ public class RadiomicsPanel extends JPanel{
 						 * slice 1 : proba image
 						 */
 						pred = pipeline.predict(pp.getCurrentSlice());
-						ij.IJ.log("PREDICTION was done ! Next, do push 'Show Results'");
-						ij.IJ.showStatus("predition was done.");
+						ij.IJ.log("> [RadiomicsPanel] Prediction complete! Click 'Show Results' to view."); // Mejorado
+						ij.IJ.showStatus("Prediction completed."); // Corregido
 						repaint();
 					}
 				});
@@ -607,7 +607,6 @@ public class RadiomicsPanel extends JPanel{
 							new Thread(new Runnable() {
 								@Override
 								public void run() {
-									// TODO Auto-generated method stub
 									pred.show();
 								}
 							}).start();
@@ -658,17 +657,16 @@ public class RadiomicsPanel extends JPanel{
 				btn.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						String className = JOptionPane.showInputDialog("Please input new class name:", null);
+						String className = JOptionPane.showInputDialog("Please enter new class name:", null); // Corregido
 						if (className != null) {
 							if (!className.trim().isEmpty()) {
-								System.out.println("Input class name: " + className);
+								ij.IJ.log("> [RadiomicsPanel] Input class name: " + className);
 								addNewClass(className);
 							} else {
-								// 空白のみ、または何も入力せずにOKを押した場合
-								System.out.println("Class name does not wrote.");
+								ij.IJ.log("> [RadiomicsPanel] Class name was not entered."); // Corregido
 							}
 						} else {
-							System.out.println("Cancel input.");
+							ij.IJ.log("> [RadiomicsPanel] Input cancelled."); // Corregido
 						}
 					}
 				});

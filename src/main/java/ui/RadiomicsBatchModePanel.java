@@ -538,7 +538,7 @@ public class RadiomicsBatchModePanel extends JPanel {
     
     // ログ出力（コンソールと内部ログの両方）
     private void log(String message) {
-        System.out.println(message);
+        ij.IJ.log(message);
         log.append(message).append("\n");
     }
 
@@ -1090,8 +1090,10 @@ public class RadiomicsBatchModePanel extends JPanel {
 				// 4. 失敗した場合 (doInBackground でスローされた例外)
 				progressBar.setVisible(false); // エラー時はプログレスバーを隠す
 				String errorMessage = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+                
+                ij.IJ.log("[ERROR] Batch processing failed: " + errorMessage);
 
-				usageTextArea.append("\n--- Error occured --- \n" + errorMessage);
+				usageTextArea.append("\n--- Error occurred --- \n" + errorMessage);
 				usageTextArea.setCaretPosition(usageTextArea.getDocument().getLength());
 
 				JOptionPane.showMessageDialog(comp, "An error occurred during processing:\n" + errorMessage, "Error",

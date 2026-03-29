@@ -442,9 +442,9 @@ public class RadiomicsVisualizationPanel extends JPanel {
 		}
 
 		if (!isValidMask(new ImagePlus("", this.maskImage.getStack().getProcessor(originalImage.getCurrentSlice())), targetLabel)) {
-			IJ.log("This mask does not have specified mask label. skip it.");
-			JOptionPane.showMessageDialog(this, "Please set valid mask label on textture param panel first.",
-					"MASK LABEL not match", JOptionPane.WARNING_MESSAGE);
+			IJ.log("[WARNING] This mask does not have the specified mask label. Skipping.");
+			JOptionPane.showMessageDialog(this, "Please set a valid mask label in the TextureParams panel first.",
+					"Mask Label Mismatch", JOptionPane.WARNING_MESSAGE); // Inglés pulido
 			return;
 		}
 		
@@ -779,22 +779,17 @@ public class RadiomicsVisualizationPanel extends JPanel {
 
 		if (maskImage != null) {
 			if (originalImage.getNSlices() != maskImage.getNSlices()) {
-				JOptionPane.showMessageDialog(this, "Please load same size images and masks.", "Mask is invalid.",
+				JOptionPane.showMessageDialog(this, "Please ensure the image and mask have the same number of slices.", "Mask is invalid",
 						JOptionPane.WARNING_MESSAGE);
 				return false;
 			}
 
-			if (originalImage.getWidth() != maskImage.getWidth()) {
-				JOptionPane.showMessageDialog(this, "Please load same size images and masks.", "Mask is invalid.",
+			if (originalImage.getWidth() != maskImage.getWidth() || originalImage.getHeight() != maskImage.getHeight()) {
+				JOptionPane.showMessageDialog(this, "Please ensure the image and mask have the same dimensions (Width x Height).", "Mask is invalid",
 						JOptionPane.WARNING_MESSAGE);
 				return false;
 			}
 
-			if (originalImage.getHeight() != maskImage.getHeight()) {
-				JOptionPane.showMessageDialog(this, "Please load same size images and masks.", "Mask is invalid.",
-						JOptionPane.WARNING_MESSAGE);
-				return false;
-			}
 		}
 		return true;
 	}

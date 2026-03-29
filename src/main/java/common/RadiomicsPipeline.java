@@ -1202,8 +1202,7 @@ public class RadiomicsPipeline {
 				removeUselessFilter.setInputFormat(trainingDataset);
 				dataAfterRemoveUseless = Filter.useFilter(trainingDataset, removeUselessFilter);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				ij.IJ.log("[ERROR] RadiomicsPipeline: Failed to remove useless attributes - " + e.getMessage());
 			}
 
 			System.out.println("フィルタリング後の属性数: " + dataAfterRemoveUseless.numAttributes());
@@ -1213,8 +1212,7 @@ public class RadiomicsPipeline {
 			try {
 				dataAfterRemoveMultiCorr = dropHighlyCorrelatedFeatures(dataAfterRemoveUseless, 0.9);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				ij.IJ.log("[ERROR] RadiomicsPipeline: Failed to drop highly correlated features - " + e.getMessage());
 			}
 
 			// --- ステップ3: LASSOによる特徴選択 ---
@@ -1254,8 +1252,7 @@ public class RadiomicsPipeline {
 				finalSelectedData = attributeSelection.reduceDimensionality(dataAfterRemoveMultiCorr);
 				trainingDataset = finalSelectedData;
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				ij.IJ.log("[ERROR] RadiomicsPipeline: Failed during LASSO attribute selection - " + e.getMessage());
 			}
 			System.out.println("最終的に選択された属性数: " + finalSelectedData.numAttributes());
 			System.out.println("最終的に選択された属性:\n" + finalSelectedData.toSummaryString());
